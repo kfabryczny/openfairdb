@@ -957,3 +957,40 @@ fn subscribe_to_bbox() {
         .dispatch();
     assert_eq!(response.status(), Status::Ok);
 }
+
+#[test]
+fn export_csv() {
+    let (client, db) = setup();
+    let entries = vec![
+        Entry::build().id("a").categories(vec!["foo"]).finish(),
+        Entry::build().id("b").categories(vec!["foo"]).finish(),
+        Entry::build().id("c").categories(vec!["bar"]).finish(),
+    ];
+    let mut conn = db.get().unwrap();
+    conn.create_category_if_it_does_not_exist(&Category {
+        id: "foo".into(),
+        created: 0,
+        version: 0,
+        name: "foo".into(),
+    }).unwrap();
+    conn.create_category_if_it_does_not_exist(&Category {
+        id: "bar".into(),
+        created: 0,
+        version: 0,
+        name: "bar".into(),
+    }).unwrap();
+    for e in entries {
+        conn.create_entry(&e).unwrap();
+    }
+    let req = client.get("/export/csv?bbox=-10,-10,10,10");
+    let mut response = req.dispatch();
+    assert_eq!(response.status(), Status::Ok);
+    for h in response.headers().iter() {
+        match h.name.as_str() {
+            "Content-Type" => assert_eq!(h.value, "text/csv"),
+            _ => { /* let these through */ }
+        }
+    }
+    let body_str = response.body().and_then(|b| b.into_string()).unwrap();
+    // TODO: assert_eq!(body_str, ...);
+}

@@ -6,9 +6,9 @@ use core::{prelude::*,
            util::geo};
 use infrastructure::error::AppError;
 use rocket::{self,
-             http::{Cookie, Cookies, Status},
+             http::{ContentType, Cookie, Cookies, Status},
              request::{self, FromRequest, Request},
-             response::{Responder, Response},
+             response::{content::Content, Responder, Response},
              Outcome,
              Route};
 use rocket_contrib::Json;
@@ -18,14 +18,6 @@ use std::result;
 type Result<T> = result::Result<Json<T>, AppError>;
 
 const COOKIE_USER_KEY: &str = "user_id";
-
-#[derive(FromForm, Clone)]
-struct SearchQuery {
-    bbox: String,
-    categories: Option<String>,
-    text: Option<String>,
-    tags: Option<String>,
-}
 
 impl<'a, 'r> FromRequest<'a, 'r> for Login {
     type Error = ();
@@ -68,6 +60,14 @@ pub fn routes() -> Vec<Route> {
         get_count_tags,
         get_version,
     ]
+}
+
+#[derive(FromForm, Clone)]
+struct SearchQuery {
+    bbox: String,
+    categories: Option<String>,
+    text: Option<String>,
+    tags: Option<String>,
 }
 
 #[get("/search?<search>")]
@@ -354,6 +354,31 @@ fn get_category(db: DbConn, id: String) -> Result<String> {
             .collect::<Vec<Category>>()),
     }?;
     Ok(Json(res))
+}
+
+#[derive(FromForm, Clone)]
+struct CsvExport {
+    bbox: String,
+}
+
+//TODO: stream data
+#[get("/export/csv?<export>")]
+fn csv_export<'a>(db: DbConn, export: CsvExport) -> result::Result<Content<&'a str>, AppError> {
+    //TODO: implement
+
+    // 1. retrieve data
+    // let entries = ...
+
+    // 2. map to  csv records
+    // let record = ..
+
+    // 3. write data with csv lib
+    // let data = ...
+
+    // 4. wrap it into CSV mimetype
+    // let res = Content(ContentType::CSV, data);
+
+    unimplemented!()
 }
 
 impl<'r> Responder<'r> for AppError {

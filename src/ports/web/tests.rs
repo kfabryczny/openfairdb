@@ -961,11 +961,36 @@ fn subscribe_to_bbox() {
 #[test]
 fn export_csv() {
     let (client, db) = setup();
-    let entries = vec![
-        Entry::build().id("a").categories(vec!["foo"]).finish(),
-        Entry::build().id("b").categories(vec!["foo"]).finish(),
-        Entry::build().id("c").categories(vec!["bar"]).finish(),
+    let mut entries = vec![
+        Entry::build().id("entry1")
+            .version(3)
+            .title("title1")
+            .description("desc1")
+            .lat(0.1)
+            .lng(0.2)
+            .categories(vec!["foo","bar"])
+            .tags(vec!["foo","bar"])
+            .license(Some("license1"))
+            .finish(),
+        Entry::build().id("entry2")
+            .categories(vec!["foo"])
+            .lat(0.0)
+            .lng(0.0)
+            .finish(),
+        Entry::build().id("entry3")
+            .categories(vec!["bar"])
+            .lat(2.0)
+            .lng(2.0)
+            .finish(),
     ];
+    entries[0].street = Some("street1".to_string());
+    entries[0].osm_node = Some(1);
+    entries[0].created = 2;
+    entries[0].zip = Some("zip1".to_string());
+    entries[0].city = Some("city1".to_string());
+    entries[0].country = Some("country1".to_string());
+    entries[0].homepage = Some("homepage1".to_string());
+
     let mut conn = db.get().unwrap();
     conn.create_category_if_it_does_not_exist(&Category {
         id: "foo".into(),
@@ -979,18 +1004,26 @@ fn export_csv() {
         version: 0,
         name: "bar".into(),
     }).unwrap();
+    conn.create_tag_if_it_does_not_exist(&Tag {
+        id: "foo".into()
+    }).unwrap();
+    conn.create_tag_if_it_does_not_exist(&Tag {
+        id: "bar".into()
+    }).unwrap();
     for e in entries {
         conn.create_entry(&e).unwrap();
     }
-    let req = client.get("/export/csv?bbox=-10,-10,10,10");
+    let req = client.get("/export/csv?bbox=-1,-1,1,1");
     let mut response = req.dispatch();
     assert_eq!(response.status(), Status::Ok);
     for h in response.headers().iter() {
         match h.name.as_str() {
-            "Content-Type" => assert_eq!(h.value, "text/csv"),
+            "Content-Type" => assert_eq!(h.value, "text/csv; charset=utf-8"),
             _ => { /* let these through */ }
         }
     }
     let body_str = response.body().and_then(|b| b.into_string()).unwrap();
-    // TODO: assert_eq!(body_str, ...);
+    assert_eq!(body_str, "id,osm_node,created,version,title,description,lat,lng,street,zip,city,country,homepage,categories,tags,license\n\
+        entry1,1,2,3,title1,desc1,0.1,0.2,street1,zip1,city1,country1,homepage1,\"foo,bar\",\"foo,bar\",license1\n\
+        entry2,,0,0,,,0,0,,,,,,\"foo,bar\",\"foo,bar\",\n");
 }

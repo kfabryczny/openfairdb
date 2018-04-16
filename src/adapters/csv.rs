@@ -1,4 +1,4 @@
-use core::prelude::*;
+use core::entities::Entry;
 
 #[derive(Debug, Serialize)]
 pub struct CsvRecord {
@@ -15,14 +15,51 @@ pub struct CsvRecord {
     city: Option<String>,
     country: Option<String>,
     homepage: Option<String>,
-    categories: Vec<String>,
-    tags: Vec<String>,
+    categories: String,
+    tags: String,
     license: Option<String>,
 }
 
 impl From<Entry> for CsvRecord {
     fn from(e: Entry) -> Self {
-        //TODO:
-        unimplemented!();
+        let Entry {
+            id,
+            osm_node,
+            created,
+            version,
+            title,
+            description,
+            lat,
+            lng,
+            street,
+            zip,
+            city,
+            country,
+            homepage,
+            license,
+            ..
+        } = e;
+
+        let categories = "foo,bar".to_string();    // TODO
+        let tags = "foo,bar".to_string();          // TODO
+
+        CsvRecord {
+            id,
+            osm_node: osm_node.map(|x| x as u64),
+            created: created as u64,
+            version: version as u64,
+            title,
+            description,
+            lat,
+            lng,
+            street,
+            zip,
+            city,
+            country,
+            homepage,
+            license,
+            categories,
+            tags
+        }
     }
 }

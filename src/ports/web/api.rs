@@ -379,7 +379,7 @@ fn csv_export<'a>(db: DbConn, export: CsvExport) -> result::Result<Content<Strin
     let mut wtr = csv::Writer::from_writer(buff);
 
     for r in records {
-        let res = wtr.serialize(r)?;
+        wtr.serialize(r)?;
     }
     wtr.flush()?;
     let data = String::from_utf8(wtr.into_inner()?)?;

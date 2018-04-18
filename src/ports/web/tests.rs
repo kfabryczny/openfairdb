@@ -968,17 +968,17 @@ fn export_csv() {
             .description("desc1")
             .lat(0.1)
             .lng(0.2)
-            .categories(vec!["foo","bar"])
-            .tags(vec!["foo","bar"])
+            .categories(vec!["bla","blubb"])
+            .tags(vec!["bli","bla"])
             .license(Some("license1"))
             .finish(),
         Entry::build().id("entry2")
-            .categories(vec!["foo"])
+            .categories(vec!["blubb"])
             .lat(0.0)
             .lng(0.0)
             .finish(),
         Entry::build().id("entry3")
-            .categories(vec!["bar"])
+            .categories(vec!["bla"])
             .lat(2.0)
             .lng(2.0)
             .finish(),
@@ -993,27 +993,27 @@ fn export_csv() {
 
     let mut conn = db.get().unwrap();
     conn.create_category_if_it_does_not_exist(&Category {
-        id: "foo".into(),
+        id: "bla".into(),
         created: 0,
         version: 0,
         name: "foo".into(),
     }).unwrap();
     conn.create_category_if_it_does_not_exist(&Category {
-        id: "bar".into(),
+        id: "blubb".into(),
         created: 0,
         version: 0,
         name: "bar".into(),
     }).unwrap();
     conn.create_tag_if_it_does_not_exist(&Tag {
-        id: "foo".into()
+        id: "bli".into()
     }).unwrap();
     conn.create_tag_if_it_does_not_exist(&Tag {
-        id: "bar".into()
+        id: "bla".into()
     }).unwrap();
     for e in entries {
         conn.create_entry(&e).unwrap();
     }
-    let req = client.get("/export/csv?bbox=-1,-1,1,1");
+    let req = client.get("/export/entries.csv?bbox=-1,-1,1,1");
     let mut response = req.dispatch();
     assert_eq!(response.status(), Status::Ok);
     for h in response.headers().iter() {
@@ -1024,6 +1024,6 @@ fn export_csv() {
     }
     let body_str = response.body().and_then(|b| b.into_string()).unwrap();
     assert_eq!(body_str, "id,osm_node,created,version,title,description,lat,lng,street,zip,city,country,homepage,categories,tags,license\n\
-        entry1,1,2,3,title1,desc1,0.1,0.2,street1,zip1,city1,country1,homepage1,\"foo,bar\",\"foo,bar\",license1\n\
-        entry2,,0,0,,,0,0,,,,,,\"foo,bar\",\"foo,bar\",\n");
+        entry1,1,2,3,title1,desc1,0.1,0.2,street1,zip1,city1,country1,homepage1,\"bla,blubb\",\"bli,bla\",license1\n\
+        entry2,,0,0,,,0,0,,,,,,blubb,,\n");
 }

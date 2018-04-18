@@ -40,8 +40,8 @@ impl From<Entry> for CsvRecord {
             ..
         } = e;
 
-        let categories = "foo,bar".to_string();    // TODO
-        let tags = "foo,bar".to_string();          // TODO
+        let categories = e.categories.join(",");
+        let tags = e.tags.join(",");
 
         CsvRecord {
             id,

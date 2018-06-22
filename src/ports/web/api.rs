@@ -58,6 +58,7 @@ pub fn routes() -> Vec<Route> {
         get_tags,
         get_ratings,
         get_category,
+        get_certs,
         get_search,
         get_duplicates,
         get_count_entries,
@@ -336,6 +337,12 @@ fn get_tags(db: DbConn) -> Result<Vec<String>> {
 fn get_categories(db: DbConn) -> Result<Vec<Category>> {
     let categories = db.all_categories()?;
     Ok(Json(categories))
+}
+
+#[get("/certs")]
+fn get_certs(db: DbConn) -> Result<Vec<CertificationMark>> {
+    let certs = db.all_certs()?;
+    Ok(Json(certs))
 }
 
 #[get("/categories/<id>")]

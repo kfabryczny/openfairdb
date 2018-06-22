@@ -391,6 +391,12 @@ impl CommentGateway for SqliteConnection {
     }
 }
 
+impl CertGateway for SqliteConnection {
+    fn all_certs(&self) -> Result<Vec<CertificationMark>> {
+        unimplemented!()
+    }
+}
+
 impl Db for SqliteConnection {
     fn create_tag_if_it_does_not_exist(&mut self, t: &Tag) -> Result<()> {
         let res = diesel::insert_into(schema::tags::table)

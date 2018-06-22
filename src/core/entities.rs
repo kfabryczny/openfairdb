@@ -118,6 +118,15 @@ pub struct BboxSubscription {
     pub username : String,
 }
 
+#[cfg_attr(rustfmt, rustfmt_skip)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+pub struct CertificationMark {
+    pub id    : String,
+    pub title : String,
+    pub url   : String,
+    pub image : String,
+}
+
 #[cfg(test)]
 pub use self::entry_builder::*;
 

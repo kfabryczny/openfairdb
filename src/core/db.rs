@@ -24,13 +24,17 @@ pub trait CommentGateway {
     fn all_comments(&self) -> Result<Vec<Comment>>;
 }
 
+pub trait CertGateway {
+    fn all_certs(&self) -> Result<Vec<CertificationMark>>;
+}
+
 //TODO:
 //  - TagGeatway
 //  - CategoryGateway
 //  - RatingGateway
 //  - SubscriptionGateway
 
-pub trait Db: EntryGateway + UserGateway + CommentGateway {
+pub trait Db: EntryGateway + UserGateway + CommentGateway + CertGateway {
     fn create_tag_if_it_does_not_exist(&mut self, &Tag) -> Result<()>;
     fn create_category_if_it_does_not_exist(&mut self, &Category) -> Result<()>;
     fn create_rating(&mut self, &Rating) -> Result<()>;

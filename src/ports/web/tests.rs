@@ -961,6 +961,15 @@ fn subscribe_to_bbox() {
     assert_eq!(response.status(), Status::Ok);
 }
 
+#[ignore]
+#[test]
+fn get_certs() {
+    let (client, db) = setup();
+    let req = client.get("/certs/");
+    let mut response = req.dispatch();
+    assert_eq!(response.status(), Status::Ok);
+}
+
 #[test]
 fn export_csv() {
     let (client, db) = setup();

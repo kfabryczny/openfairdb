@@ -61,6 +61,7 @@ pub struct MockDb {
     pub ratings: Vec<Rating>,
     pub comments: Vec<Comment>,
     pub bbox_subscriptions: Vec<BboxSubscription>,
+    pub certs: Vec<CertificationMark>,
 }
 
 impl MockDb {
@@ -73,6 +74,7 @@ impl MockDb {
             ratings: vec![],
             comments: vec![],
             bbox_subscriptions: vec![],
+            certs: vec![],
         }
     }
 }
@@ -174,6 +176,12 @@ impl CommentGateway for MockDb {
 
     fn all_comments(&self) -> RepoResult<Vec<Comment>> {
         Ok(self.comments.clone())
+    }
+}
+
+impl CertGateway for MockDb {
+    fn all_certs(&self) -> RepoResult<Vec<CertificationMark>> {
+        Ok(self.certs.clone())
     }
 }
 

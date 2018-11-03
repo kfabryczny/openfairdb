@@ -1,7 +1,7 @@
 // Copyright (c) 2015 - 2018 Markus Kohlhase <mail@markus-kohlhase.de>
 
 #![feature(plugin, custom_derive, test, transpose_result)]
-#![plugin(rocket_codegen)]
+#![feature(proc_macro_hygiene, decl_macro)]
 
 extern crate chrono;
 
@@ -36,6 +36,7 @@ extern crate quoted_printable;
 
 extern crate regex;
 
+#[macro_use]
 extern crate rocket;
 
 extern crate rocket_contrib;
